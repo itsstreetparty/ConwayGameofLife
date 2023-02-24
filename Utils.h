@@ -2,17 +2,24 @@
 #define UTILS_H
 
 #include <iostream>
+#include <unordered_map>
+#include <array>
+
 #include "Matrix.h"
 
+
 using namespace std;
+
+//using precomputedNeighborIndices = std::vector<std::vector<std::array<std::array<int, 2>, 8>>>;
 
 void my_function1() {
     std::cout << "Hello, world!\n";
 }
 
 // wrapping toroidal indices 
-int wrappingtoroidalindice(int idx, int idx_offset,int num_ele_){
-    return (idx + idx_offset + num_ele_)%num_ele_;
+uint8_t wrappingtoroidalindice(int idx, int idx_offset,int num_ele_){
+    uint8_t value = static_cast<uint8_t>((idx + idx_offset + num_ele_)%num_ele_);
+    return value;
 }
 
 const IntMatrix naiveNeighborIndices(int row, int col, int rows, int cols) {
@@ -29,14 +36,21 @@ const IntMatrix naiveNeighborIndices(int row, int col, int rows, int cols) {
     return m;
 }
 
+// template<typename T>
+// std::unordered_map<int, IntMatrix> calculateIndexMap(const Matrix<T>& currentGrid){
+//     std::unordered_map<int, IntMatrix> index_map;
+//     return index_map;
+// }
+
+
 template<typename T>
-int naiveNeighborCounting(const IntMatrix& neighborIndices, const Matrix<T>& m){
+int naiveNeighborCounting(const IntMatrix& neighborIndices, const Matrix<T>& currentGrid){
 
     int sum = 0;
     for (int i = 0; i < 8; ++i) {
         const int r = neighborIndices(i,0);
         const int c = neighborIndices(i,1);
-        const auto value = m(r,c);
+        const auto value = currentGrid(r,c);
         sum += value;
 
         // // Print the values of the neighboring elements
@@ -84,7 +98,7 @@ const Matrix<T> rulesOfLife(const Matrix<T>& _actual_grid) {
 
             //You then count the number of live cells in the 8 neighboring cells around the current element. 
             //These 8 neighboring cells are the ones directly above, below, to the left, to the right, and in the diagonal directions.
-            IntMatrix _neighbor_indices = naiveNeighborIndices(row,col,rows,cols);
+            IntMatrix _neighbor_indices = naiveNeighborIndices(row,col,rows,cols); // use precomputation 
             int numberOfNeighborCellsAlive = naiveNeighborCounting(_neighbor_indices,_actual_grid);
 
             /***If the current cell is a live cell and has 2 or 3 live neighbors, it survives to the next generation and its value in the new matrix is set to 1. 

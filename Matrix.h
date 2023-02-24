@@ -3,13 +3,15 @@
 
 #include <vector>
 
+//template <typename T>
 template <typename T>
 class Matrix {
 public:
     // Constructor that creates a matrix with n rows and m columns
-    Matrix(int n, int m) : data(n, std::vector<T>(m)) {}
+    // Matrix(int n, int m) : data(n, std::vector<T>(m)) {}
+    Matrix(int rows, int cols):data(rows, std::vector<T>(cols)){}
 
-        // Constructor that creates a matrix with a given initializer list
+    // Constructor that creates a matrix with a given initializer list
     Matrix(std::initializer_list<std::initializer_list<T>> init) {
         for (const auto& row : init) {
             data.emplace_back(row);
@@ -52,6 +54,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
     return os;
 }
 
-using IntMatrix = Matrix<int>; // Define an alias for Matrix<int>
+using IntMatrix = Matrix<uint8_t>; // Define an alias for Matrix<int>
+//using NeighborMatrix = Matrix<int, 8, 2>;
 
 #endif

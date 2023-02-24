@@ -2,9 +2,12 @@
 #include <vector>
 #include <string>
 #include <cmath>
+//#include <immintrin.h> 
 #include "Event.h"
 #include "Utils.h"
 #include "Matrix.h"
+#include "PrecomputationLookUpTable.h"
+
 
 using namespace std;
 
@@ -20,7 +23,7 @@ int main()
 
     cout << " main " << endl;
 
-    Matrix<int> initial_grid = {
+    IntMatrix initial_grid = {
        {1,1,1,0},
        {1,1,1,0},
        {0,0,0,0}
@@ -34,19 +37,50 @@ int main()
 
     //cout << naiveNeighborCounting(neighborg_indices, initial_grid) << endl;
 
+   std::vector<std::vector<IntMatrix>> possible;
+
     cout << initial_grid << endl;
 
     constexpr int iterations = 3;
 
-    cout << initial_grid << endl;
     auto changing_grid = initial_grid;
-    for (int iter=0; iter<3; ++iter){
-        cout << " iteration " << iter << endl;
+    for (int iter=0; iter<1; ++iter){
+        cout << " rulesOfLife " << iter << endl;
         const auto new_grid = rulesOfLife(changing_grid);
          cout << new_grid << endl;
         changing_grid = new_grid;
     }
 
-    return 0;
+    precomputedNeighborIndices itsPNI;
+    precomputeLookUpNeighborIndices(initial_grid,itsPNI);
+    const auto new_grid = rulesOfLifeO1(initial_grid,itsPNI);
+    cout << " rulesOfLifeO1 " << endl;
+    cout << new_grid << endl;
+
+
+    const auto new_grid2 = rulesOfLifeO2(initial_grid,itsPNI);
+    cout << " rulesOfLifeO2 " << endl;
+    cout << new_grid << endl;
+
+
+
+    // uint8_t packed = 0b10101010;
+    // uint8_t LEFT_MASK = 0b10000000;
+    // uint8_t RIGHT_MASK = 0b00000001;
+
+    // uint8_t count = 0;
+
+    // count += packed & LEFT_MASK?1:0;
+    // count += (packed<<1) & LEFT_MASK?1:0;
+    // count += (packed<<2) & LEFT_MASK?1:0;
+    // count += (packed<<3) & LEFT_MASK?1:0;
+    // count += packed & RIGHT_MASK?1:0;
+    // count += (packed>>1) & RIGHT_MASK?1:0;
+    // count += (packed>>2) & RIGHT_MASK?1:0;
+    // count += (packed>>3) & RIGHT_MASK?1:0;
+
+    // std::cout << " count "<< count << std::endl;
+
+    return 0;  
 
 }
