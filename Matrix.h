@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <type_traits>
 
 using namespace std;
 
@@ -23,11 +24,17 @@ public:
 
     // Accessor for an element at row i and column j
     T& operator()(int i, int j) {
+        if (i < 0 || i >= data.size() || j < 0 || j >= data[0].size()) {
+            throw std::out_of_range("Index out of range");
+        }
         return data[i][j];
     }
 
     // Const accessor for an element at row i and column j
     const T& operator()(int i, int j) const {
+        if (i < 0 || i >= data.size() || j < 0 || j >= data[0].size()) {
+            throw std::out_of_range("Index out of range");
+        }
         return data[i][j];
     }
 
@@ -41,21 +48,51 @@ public:
         return data[0].size();
     }
 
+    // Overloaded [] operator that returns a reference to the row at the specified index
+    std::vector<T>& operator[](int idx) {
+        if (idx < 0 || idx >= data.size()) {
+            throw std::out_of_range("Index out of range");
+        }
+        return data[idx];
+    }
+
+    // Const overloaded [] operator that returns a const reference to the row at the specified index
+    const std::vector<T>& operator[](int idx) const {
+        if (idx < 0 || idx >= data.size()) {
+            throw std::out_of_range("Index out of range");
+        }
+        return data[idx];
+    }
+
 private:
     std::vector<std::vector<T>> data;
 };
 
+// // Output stream operator for Matrix
+// template <typename T>
+// std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
+//     for (int i = 0; i < matrix.rows(); i++) {
+//         for (int j = 0; j < matrix.cols(); j++) {
+//             os << matrix(i, j) << " ";
+//         }
+//         os << std::endl;
+//     }
+//     return os;
+// }
+
 // Output stream operator for Matrix
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
+typename std::enable_if<std::is_integral<T>::value, std::ostream&>::type
+operator<<(std::ostream& os, const Matrix<T>& matrix) {
     for (int i = 0; i < matrix.rows(); i++) {
         for (int j = 0; j < matrix.cols(); j++) {
-            os << matrix(i, j) << " ";
+            os << static_cast<int>(matrix(i, j)) << " ";
         }
         os << std::endl;
     }
     return os;
 }
+
 
 using IntMatrix = Matrix<uint8_t>; // Define an alias for Matrix<int>
 //using NeighborMatrix = Matrix<int, 8, 2>;

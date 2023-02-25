@@ -6,8 +6,6 @@ ConwaysGameOfLife::ConwaysGameOfLife(const IntMatrix& grid)
     precomputeLookUpNeighborIndices();
 }
 
-
-
 void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
 
     const int rows =itsGrid.rows();
@@ -63,6 +61,10 @@ uint8_t ConwaysGameOfLife::countNeighbors(const neighborIndicesArray& _neighborI
 }
 
 
+IntMatrix ConwaysGameOfLife::getUpdatedGrid(){
+    return itsGrid;
+}
+
 IntMatrix ConwaysGameOfLife::NextGen(){
 
     IntMatrix _next_grid(rows, cols);
@@ -78,6 +80,7 @@ IntMatrix ConwaysGameOfLife::NextGen(){
             }
         }
     }
+    itsGrid = _next_grid;
     return std::move(_next_grid);
 
 }
