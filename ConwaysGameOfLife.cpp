@@ -6,6 +6,7 @@ ConwaysGameOfLife::ConwaysGameOfLife(const IntMatrix& grid)
     precomputeLookUpNeighborIndices();
 }
 
+// precompute the indices of each cell's neighbors in a toroidal grid (wrapping around the edges)
 void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
 
     const int rows =itsGrid.rows();
@@ -39,18 +40,20 @@ void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
     return;
 }
 
+// count the number of live neighbors for a given cell
 uint8_t ConwaysGameOfLife::countNeighbors(const neighborIndicesArray& _neighborIndices){
     constexpr uint8_t RIGHT_MASK = 0b00000001;
     constexpr uint8_t LEFT_MASK = 0b10000000;
     uint8_t packed = 0;
-    //int sum = 0;
+    
+    // pack the states of the neighbor cells into a single integer for efficiency
     for (int i = 0; i < 8; ++i) {
         const int r = _neighborIndices[i][0];
         const int c = _neighborIndices[i][1];
-        // pack the states of the neighbor cells into a single integer
         packed|=(itsGrid(r,c)&RIGHT_MASK)<<i;
     }
 
+    // count the number of live neighbors 
     uint8_t count = 0;
     count += packed & LEFT_MASK?1:0;
     count += (packed<<1) & LEFT_MASK?1:0;
@@ -64,11 +67,12 @@ uint8_t ConwaysGameOfLife::countNeighbors(const neighborIndicesArray& _neighborI
     return count;
 }
 
-
+// return the current state of the grid
 IntMatrix ConwaysGameOfLife::getUpdatedGrid(){
     return itsGrid;
 }
 
+// update the grid to the next generation
 void ConwaysGameOfLife::NextGen(){
 
     IntMatrix _next_grid(rows, cols);

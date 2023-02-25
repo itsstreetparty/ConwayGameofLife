@@ -24,6 +24,13 @@ IntMatrix converToMatrix(std::vector<std::string>& lines){
 
     const int _ROWS= lines.size();
     const int _COLS= lines[0].size();
+
+    for (int i = 1; i < lines.size(); ++i) {
+        if (lines[i].size() != _COLS) {
+            throw std::runtime_error("Input matrix has rows of different lengths");
+        }
+    }
+
     IntMatrix matrix(_ROWS,_COLS);
     for (int i = 0; i < lines.size(); i++) {
         for (int j = 0; j < lines[0].size(); j++) {
@@ -47,10 +54,20 @@ std::vector<std::string> converToVectorOfStrings(const IntMatrix& matrix){
             //matrix(i, j) = static_cast<uint8_t>(lines[i][j] - '0');
             str += std::to_string(matrix(i,j));
         }
-        std::cout << str << std::endl;
+        //std::cout << str << std::endl;
         vec.emplace_back(str);
     }
-    return vec;
+    return std::move(vec);
+}
+
+std::string getFilePath(std::string filename){
+
+    std::filesystem::path cwd = std::filesystem::current_path();
+    //std::filesystem::path filename = "input.txt";
+    std::filesystem::path filepath = cwd / filename;
+    std::string filepath_str = filepath.string();
+    return filepath_str;
+
 }
 
 
