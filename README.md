@@ -24,7 +24,7 @@ ConwayGameofLife
 4. Use a sparse matrix representation if the matrix is sparse (i.e., has a high density of zeros) #TODO
 5. Use caching to improve performance. For example, you can precompute the neighbors of each cell and store them in a data structure to avoid recomputing them for each iteration of the game (DONE)
 6. Avoid unnecessary memory allocations. For example, you can reuse the same matrix for each iteration of the game rather than allocating a new matrix each time. (DONE)
-7. Consider using SIMD (Single Instruction, Multiple Data) instructions if they are available on your system. SIMD instructions can perform the same operation on multiple data elements in parallel, which can significantly improve performance.
-8. Optimize the order in which you update the cells. For example, you can update the cells in a raster scan order (i.e., left-to-right, top-to-bottom) to improve locality of reference and cache usage. #todo
+7. Consider using SIMD (Single Instruction, Multiple Data) instructions if they are available on your system. SIMD instructions can perform the same operation on multiple data elements in parallel, which can significantly improve performance. ( NOT AVAILABLE )
+
 
 
