@@ -10,17 +10,13 @@ void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
 
     const int rows =itsGrid.rows();
     const int cols =itsGrid.cols();
-    itsPrecomputedNeighborIndices.resize(rows);
 
-    for (int row = 0; row < rows; ++row) {
-        itsPrecomputedNeighborIndices[row].resize(cols);
-        for (int col = 0; col < cols; ++col) {
-
+    auto generate_indices = [&](int row, int col, int rows, int cols){
             int row_up = toroidalWrapping(row,-1,rows);
             int col_left = toroidalWrapping(col,-1,cols);
             int row_down = toroidalWrapping(row,1,rows);
-            int col_right = toroidalWrapping(col,1,cols);
-            itsPrecomputedNeighborIndices[row][col] = {{
+            int col_right = toroidalWrapping(col,1,cols);    
+            neighborIndicesArray indices = {{
                 {row_up, col_left},    // upper-left
                 {row_up, col},         // upper
                 {row_up, col_right},   // upper-right
@@ -30,14 +26,22 @@ void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
                 {row_down, col},       // down
                 {row_down, col_right}  // down-right
             }};
+            return std::move(indices);
+    };
+
+    itsPrecomputedNeighborIndices.resize(rows);
+    for (int row = 0; row < rows; ++row) {  
+        itsPrecomputedNeighborIndices[row].resize(cols);
+        for (int col = 0; col < cols; ++col) {
+            itsPrecomputedNeighborIndices[row][col] = generate_indices(row,col,rows,cols);
         }
     }
     return;
 }
 
 uint8_t ConwaysGameOfLife::countNeighbors(const neighborIndicesArray& _neighborIndices){
-    const uint8_t RIGHT_MASK = 0b00000001;
-    const uint8_t LEFT_MASK = 0b10000000;
+    constexpr uint8_t RIGHT_MASK = 0b00000001;
+    constexpr uint8_t LEFT_MASK = 0b10000000;
     uint8_t packed = 0;
     //int sum = 0;
     for (int i = 0; i < 8; ++i) {
@@ -65,7 +69,7 @@ IntMatrix ConwaysGameOfLife::getUpdatedGrid(){
     return itsGrid;
 }
 
-IntMatrix ConwaysGameOfLife::NextGen(){
+void ConwaysGameOfLife::NextGen(){
 
     IntMatrix _next_grid(rows, cols);
     //#pragma omp parallel for  useful is omp.h is NOT used
@@ -80,9 +84,7 @@ IntMatrix ConwaysGameOfLife::NextGen(){
             }
         }
     }
-    itsGrid = _next_grid;
-    return std::move(_next_grid);
-
+    itsGrid = std::move(_next_grid); // avoid unnecesary copy. faster to swap?
 }
 
 

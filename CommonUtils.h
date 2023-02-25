@@ -5,30 +5,12 @@
 #include <vector>
 #include "Matrix.h"
 
-void my_function() {
-    std::cout << "Hello, world!\n";
-}
-
 
 int getNumberOfIterations(std::vector<std::string>& lines) {
     int number_of_iterations = std::stoi(lines.back());
     std::cout << " number of iterations "<< number_of_iterations << std::endl;
     lines.pop_back();
     return number_of_iterations;
-}
-
-
-void removeLastCharacter(std::vector<std::string>& lines){
-    std::for_each(lines.begin(),lines.end(),[](auto& value){
-        char last_char = value.back();
-        if (last_char == ' ' || last_char == '\t' || last_char == '\n' || static_cast<int>(last_char) ==13 ){
-            value.pop_back();
-        }
-        for (char c : value) {
-            std::cout << "Character: " << c << " (ASCII " << static_cast<int>(c) << ")" << std::endl;
-        }
-        std::cout << value << " value size " << value.size() <<std::endl;
-    });
 }
 
 IntMatrix converToMatrix(std::vector<std::string>& lines){
@@ -38,10 +20,6 @@ IntMatrix converToMatrix(std::vector<std::string>& lines){
         if (last_char == ' ' || last_char == '\t' || last_char == '\n' || static_cast<int>(last_char) ==13 ){
             value.pop_back();
         }
-        // for (char c : value) {
-        //     std::cout << "Character: " << c << " (ASCII " << static_cast<int>(c) << ")" << std::endl;
-        // }
-        // std::cout << value << " value size " << value.size() <<std::endl;
     });
 
     const int _ROWS= lines.size();
@@ -55,6 +33,24 @@ IntMatrix converToMatrix(std::vector<std::string>& lines){
 
     return std::move(matrix);
 
+}
+
+std::vector<std::string> converToVectorOfStrings(const IntMatrix& matrix){
+    const int _ROWS = matrix.rows();
+    const int _COLS = matrix.cols();
+    
+    std::vector<std::string> vec;
+    
+    for (int i = 0; i < _ROWS; ++i) {
+        std::string str="";
+        for (int j = 0; j < _COLS; ++j) {
+            //matrix(i, j) = static_cast<uint8_t>(lines[i][j] - '0');
+            str += std::to_string(matrix(i,j));
+        }
+        std::cout << str << std::endl;
+        vec.emplace_back(str);
+    }
+    return vec;
 }
 
 

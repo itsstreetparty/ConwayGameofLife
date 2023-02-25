@@ -9,8 +9,8 @@
 class ConwaysGameOfLife {
 public:
     ConwaysGameOfLife(const IntMatrix& grid);
-    ConwaysGameOfLife(std::vector<string>& inputFile);
-    IntMatrix NextGen();
+    //ConwaysGameOfLife(std::vector<string>& inputFile);
+    void NextGen();
     //IntMatrix calNextGen();
     IntMatrix getUpdatedGrid();
 

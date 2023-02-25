@@ -69,21 +69,8 @@ private:
 };
 
 // // Output stream operator for Matrix
-// template <typename T>
-// std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
-//     for (int i = 0; i < matrix.rows(); i++) {
-//         for (int j = 0; j < matrix.cols(); j++) {
-//             os << matrix(i, j) << " ";
-//         }
-//         os << std::endl;
-//     }
-//     return os;
-// }
-
-// Output stream operator for Matrix
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value, std::ostream&>::type
-operator<<(std::ostream& os, const Matrix<T>& matrix) {
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
     for (int i = 0; i < matrix.rows(); i++) {
         for (int j = 0; j < matrix.cols(); j++) {
             os << static_cast<int>(matrix(i, j)) << " ";
@@ -92,6 +79,19 @@ operator<<(std::ostream& os, const Matrix<T>& matrix) {
     }
     return os;
 }
+
+// Output stream operator for Matrix
+// template <typename T>
+// typename std::enable_if<std::is_integral<T>::value, std::ostream&>::type
+// operator<<(std::ostream& os, const Matrix<T>& matrix) {
+//     for (int i = 0; i < matrix.rows(); i++) {
+//         for (int j = 0; j < matrix.cols(); j++) {
+//             os << static_cast<int>(matrix(i, j)) << " ";
+//         }
+//         os << std::endl;
+//     }
+//     return os;
+// }
 
 
 using IntMatrix = Matrix<uint8_t>; // Define an alias for Matrix<int>

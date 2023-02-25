@@ -3,11 +3,8 @@
 
 FileManager::FileManager(const std::string& filename) : m_filename(filename) {
     if (fileExists()){
-        std::cout<< " file exists" << std::endl;
         if (checkFileSize()){
-            std::cout<< " file size is correct" << std::endl;
             if (is_text_file()){
-                std::cout<< " is a text file "<< std::endl;
             }else{
                 std::cout<< " IT IS NOT A TEXT FILE "<< std::endl;
             }
