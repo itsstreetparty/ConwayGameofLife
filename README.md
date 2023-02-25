@@ -19,12 +19,12 @@ ConwayGameofLife
 # IMPROVEMENTS
 
 1. Use toroidal wrapping to avoid the need for special edge handling (DONE)
-2. Use bitsets if the matrix is not sparse (i.e., has a low density of live cells).
-3. Use parallel programming if the matrix is large and the number of available cores is sufficient.
-4. Use a sparse matrix representation if the matrix is sparse (i.e., has a high density of zeros).
-5. Use caching to improve performance. For example, you can precompute the neighbors of each cell and store them in a data structure to avoid recomputing them for each iteration of the game.
-6. Avoid unnecessary memory allocations. For example, you can reuse the same matrix for each iteration of the game rather than allocating a new matrix each time.
+2. Use bitsets if the matrix is not sparse (i.e., has a low density of live cells) (NOT POSSIBLE BECAUSE dimensions of the matrix know at COMPILE TIME)
+3. Use parallel programming if the matrix is large and the number of available cores is sufficient. #todo
+4. Use a sparse matrix representation if the matrix is sparse (i.e., has a high density of zeros) #TODO
+5. Use caching to improve performance. For example, you can precompute the neighbors of each cell and store them in a data structure to avoid recomputing them for each iteration of the game (DONE)
+6. Avoid unnecessary memory allocations. For example, you can reuse the same matrix for each iteration of the game rather than allocating a new matrix each time. #todo
 7. Consider using SIMD (Single Instruction, Multiple Data) instructions if they are available on your system. SIMD instructions can perform the same operation on multiple data elements in parallel, which can significantly improve performance.
-8. Optimize the order in which you update the cells. For example, you can update the cells in a raster scan order (i.e., left-to-right, top-to-bottom) to improve locality of reference and cache usage.
+8. Optimize the order in which you update the cells. For example, you can update the cells in a raster scan order (i.e., left-to-right, top-to-bottom) to improve locality of reference and cache usage. #todo
 
 
