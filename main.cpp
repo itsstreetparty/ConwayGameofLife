@@ -1,6 +1,6 @@
 #include <iostream>
 #include <filesystem>
-#include <algorithm>
+#include <vector>
 
 #include "Matrix.h"
 #include "ConwaysGameOfLife.h"
@@ -8,6 +8,10 @@
 #include "CommonUtils.h"
 
 using namespace std;
+
+void some_function(int value) {
+  // do something with value
+}
 
 int main()
 {

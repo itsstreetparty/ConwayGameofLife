@@ -1,4 +1,7 @@
 #include "ConwaysGameOfLife.h"
+#include <algorithm>
+#include <future>
+//#include <execution>
 
 ConwaysGameOfLife::ConwaysGameOfLife(const IntMatrix& grid)
     : itsGrid(grid), rows(itsGrid.rows()),cols(itsGrid.cols())
@@ -6,35 +9,64 @@ ConwaysGameOfLife::ConwaysGameOfLife(const IntMatrix& grid)
     precomputeLookUpNeighborIndices();
 }
 
+std::array<std::array<int, 2>, 8> ConwaysGameOfLife::generateIndices(int row, int col, int rows, int cols){
+    const int row_up = toroidalWrapping(row,-1,rows);
+    const int col_left = toroidalWrapping(col,-1,cols);
+    const int row_down = toroidalWrapping(row,1,rows);
+    const int col_right = toroidalWrapping(col,1,cols); 
+
+    neighborIndicesArray indices = {{
+        {row_up, col_left},    // upper-left
+        {row_up, col},         // upper
+        {row_up, col_right},   // upper-right
+        {row, col_left},       // left 
+        {row, col_right},      // right
+        {row_down, col_left},  // down-left
+        {row_down, col},       // down
+        {row_down, col_right}  // down-right
+    }};
+    return indices;
+}
+
 // precompute the indices of each cell's neighbors in a toroidal grid (wrapping around the edges)
 void ConwaysGameOfLife::precomputeLookUpNeighborIndices(){
 
-    const int rows =itsGrid.rows();
-    const int cols =itsGrid.cols();
-
-    auto generate_indices = [&](int row, int col, int rows, int cols){
-            int row_up = toroidalWrapping(row,-1,rows);
-            int col_left = toroidalWrapping(col,-1,cols);
-            int row_down = toroidalWrapping(row,1,rows);
-            int col_right = toroidalWrapping(col,1,cols);    
-            neighborIndicesArray indices = {{
-                {row_up, col_left},    // upper-left
-                {row_up, col},         // upper
-                {row_up, col_right},   // upper-right
-                {row, col_left},       // left 
-                {row, col_right},      // right
-                {row_down, col_left},  // down-left
-                {row_down, col},       // down
-                {row_down, col_right}  // down-right
-            }};
-            return std::move(indices);
-    };
-
     itsPrecomputedNeighborIndices.resize(rows);
-    for (int row = 0; row < rows; ++row) {  
-        itsPrecomputedNeighborIndices[row].resize(cols);
-        for (int col = 0; col < cols; ++col) {
-            itsPrecomputedNeighborIndices[row][col] = generate_indices(row,col,rows,cols);
+    
+    if(rows<=MINIMUM_LEVEL_OF_ROWS){ 
+        for (int row = 0; row < rows; ++row) {  
+            itsPrecomputedNeighborIndices[row].resize(cols);
+            for (int col = 0; col < cols; ++col) {
+                itsPrecomputedNeighborIndices[row][col] = generateIndices(row,col,rows,cols);
+            }
+        }
+    }else{
+        // right now XCODE, CLANG and STANDARD LIBRARY does not support OpenMP and C++17 Parallel algorithm std::execution::par is not found in #include<execution>
+        //std::cout << " parallel calculation" << std::endl;
+        std::vector<std::future<void>> futures;
+        futures.reserve(num_threads);
+        int chunk_rows = rows / num_threads;
+        int odd_rows = rows % num_threads;
+        for (int t = 0; t < num_threads; ++t) {
+            int chunk_start = t * chunk_rows + std::min(t, odd_rows);
+            int chunk_end = chunk_start + chunk_rows + (t < odd_rows ? 1 : 0);
+
+            // create a new task for the rows inside chunk_start and chunk_end
+            precomputedLookUpTable& _neighbors = itsPrecomputedNeighborIndices;
+            futures.push_back(std::async(std::launch::async, [=, &_neighbors](){
+                //std::cout<< " thread "<< t<< std::endl;
+                for (int row = chunk_start; row < chunk_end; ++row) {
+                    // generate_indices
+                    _neighbors[row].resize(cols);
+                    for (int col = 0; col < cols; ++col) {
+                        _neighbors[row][col] = generateIndices(row,col,rows,cols);
+                    }
+                }
+            }));
+        }
+
+        for (auto& f : futures) {
+            f.get();
         }
     }
     return;
@@ -77,6 +109,8 @@ void ConwaysGameOfLife::NextGen(){
 
     IntMatrix _next_grid(rows, cols);
     //#pragma omp parallel for  useful is omp.h is NOT used
+
+    // here parallel would be done as above
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < cols; ++col) {
             const auto& _neighbor_indices = itsPrecomputedNeighborIndices[row][col];
